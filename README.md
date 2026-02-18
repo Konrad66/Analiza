@@ -34,9 +34,9 @@ Repozytorium zawiera kompletne skrypty do:
 
 Zainstaluj zależności:
 
-```bash
+```powershell
 python -m venv .venv
-source .venv/bin/activate
+.\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 pip install -e .
 ```
@@ -46,11 +46,11 @@ pip install -e .
 1. Pobierz dane z Kaggle i rozpakuj do `data/raw/coal-classification`.
 2. Uruchom podział na zbiory:
 
-```bash
-python scripts/prepare_data.py \
-  --input-dir data/raw/coal-classification \
-  --output-dir data/processed/coal-classification \
-  --val-size 0.15 \
+```powershell
+python scripts/prepare_data.py `
+  --input-dir data/raw/coal-classification `
+  --output-dir data/processed/coal-classification `
+  --val-size 0.15 `
   --test-size 0.15
 ```
 
@@ -67,14 +67,25 @@ processed/coal-classification/
     └── SubBituminous/
 ```
 
+## Augmentacja
+```powershell
+python scripts/augment_data.py `
+  --input-dir data/processed/coal-classification/val `
+  --output-dir data/processed/coal-classification/val_aug `
+  --copies 4 `
+  --output-size 224 `
+  --seed 42 `
+  --include-originals
+```
+
 ## Trening ResNet
 
-```bash
-python scripts/train_resnet.py \
-  --data-dir data/processed/coal-classification \
-  --epochs 25 \
-  --batch-size 32 \
-  --lr 1e-3 \
+```powershell
+python scripts/train_resnet.py `
+  --data-dir data/processed/coal-classification `
+  --epochs 25 `
+  --batch-size 32 `
+  --lr 1e-3 `
   --output-dir runs/resnet
 ```
 
@@ -82,21 +93,26 @@ python scripts/train_resnet.py \
 
 Ultralytics YOLO wspiera tryb `classify`.
 
-```bash
-python scripts/train_yolo.py \
-  --data-dir data/processed/coal-classification \
-  --epochs 25 \
-  --img-size 224 \
+```powershell
+python scripts/train_yolo.py `
+  --data-dir data/processed/coal-classification `
+  --epochs 25 `
+  --img-size 224 `
   --output-dir runs/yolo
 ```
 
 ## Ewaluacja
 
-```bash
-python scripts/evaluate.py \
-  --data-dir data/processed/coal-classification/test \
-  --resnet-ckpt runs/resnet/best.pt \
-  --yolo-weights runs/yolo/weights/best.pt
+```powershell
+python scripts/evaluate_resnet.py `
+  --data-dir data/processed/coal-classification/test `
+  --resnet-ckpt runs/resnet/best.pt `
+  --output-dir reports
+
+python scripts/evaluate_yolo.py `
+  --data-dir data/processed/coal-classification/test `
+  --yolo-weights runs/classify/runs/yolo/train/weights/best.pt `
+  --output-dir reports
 ```
 
 ## Notatki do pracy

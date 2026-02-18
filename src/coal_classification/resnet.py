@@ -119,7 +119,7 @@ def train_resnet(config: ResNetConfig) -> Path:
     return best_path
 
 
-def evaluate_resnet(model_path: Path, data_dir: Path) -> dict[str, float | str]:
+def evaluate_resnet(model_path: Path, data_dir: Path) -> dict[str, float | str | list[int] | list[str]]:
     checkpoint = torch.load(model_path, map_location="cpu")
     classes = checkpoint["classes"]
 
@@ -156,5 +156,8 @@ def evaluate_resnet(model_path: Path, data_dir: Path) -> dict[str, float | str]:
         "recall": metrics.recall,
         "f1": metrics.f1,
         "report": metrics.report,
+        "y_true": y_true,
+        "y_pred": y_pred,
+        "labels": classes,
     }
 
